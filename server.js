@@ -10,6 +10,7 @@ var os = require('os');
 var del = require('del');
 var mime = require('mime');
 var archiver = require('archiver');
+var sendSeekable = require('send-seekable')
 
 var client, url;
 
@@ -32,14 +33,14 @@ io.on('connection', function (socket) {
 	socket.on('remove-torrent', removeTorrent);
 });
 
-app.get('/torrent/:filename', function(req, res) {
+app.get('/torrent/:filename', sendSeekable, function(req, res) {
 	console.log('Torrent file request.');
 	var file = findFile(req.params.filename);
 	if (file) {
 		var stream = file.createReadStream();
 		res.set('Content-Type', mime.lookup(file.name));
 		res.set('Content-Length', file.length);
-		stream.pipe(res);
+		res.sendSeekable(stream)
 	}
 	else res.status(404).end();
 });

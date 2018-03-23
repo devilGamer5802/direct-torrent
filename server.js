@@ -40,7 +40,7 @@ app.get('/torrent/:filename', sendSeekable, function(req, res) {
 		var stream = file.createReadStream();
 		res.set('Content-Type', mime.lookup(file.name));
 		res.set('Content-Length', file.length);
-		res.sendSeekable(stream)
+		res.sendSeekable(stream, { length: file.length })
 	}
 	else res.status(404).end();
 });
